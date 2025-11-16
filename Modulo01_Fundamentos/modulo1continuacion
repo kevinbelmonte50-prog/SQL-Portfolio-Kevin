@@ -1,0 +1,33 @@
+CREATE TABLE Clientes (
+    IdCliente INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL
+);
+GO
+
+CREATE TABLE Productos (
+    IdProducto INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre VARCHAR(100) NOT NULL,
+    Precio DECIMAL(10,2) NOT NULL,
+    Stock INT NOT NULL
+);
+GO
+
+CREATE TABLE Ventas (
+    IdVenta INT IDENTITY(1,1) PRIMARY KEY,
+    Fecha DATETIME DEFAULT GETDATE(),
+    IdCliente INT NOT NULL,
+    FOREIGN KEY (IdCliente) REFERENCES Clientes(IdCliente)
+);
+GO
+
+CREATE TABLE DetalleVenta (
+    IdDetalle INT IDENTITY(1,1) PRIMARY KEY,
+    IdVenta INT NOT NULL,
+    IdProducto INT NOT NULL,
+    Cantidad INT NOT NULL,
+    PrecioUnitario DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (IdVenta) REFERENCES Ventas(IdVenta),
+    FOREIGN KEY (IdProducto) REFERENCES Productos(IdProducto)
+);
+GO
