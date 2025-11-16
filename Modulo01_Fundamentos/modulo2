@@ -1,0 +1,16 @@
+BEGIN TRAN;
+
+UPDATE Productos
+SET Stock = Stock - 2
+WHERE IdProducto = 1;
+
+IF @@ERROR <> 0 OR (SELECT Stock FROM Productos WHERE IdProducto = 1) < 0
+BEGIN
+    ROLLBACK;
+    PRINT 'Error: No hay stock suficiente';
+END
+ELSE
+BEGIN
+    COMMIT;
+    PRINT 'Transacción completada correctamente';
+END
