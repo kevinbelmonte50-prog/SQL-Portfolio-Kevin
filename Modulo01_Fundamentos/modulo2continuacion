@@ -1,1 +1,47 @@
+CREATE PROCEDURE RegistrarVenta
+    @IdCliente INT,
+    @IdProducto INT,
+    @Cantidad INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRAN;
+
+    DECLARE @Precio DECIMAL(10,2);
+    SELECT @Precio = Precio FROM Productos WHERE IdProducto = @IdProducto;
+
+    IF @Precio IS NULL
+    BEGIN
+        ROLLBACK;
+        PRINT 'Producto no existe';
+        RETURN;
+    END
+
+    -- Insertar venta
+    INSERT INTO Ventas(IdCliente)
+    VALUES (@IdCliente);
+
+    DECLARE @IdVenta INT = SCOPE_IDENTITY();
+
+    -- Insertar detalle
+    INSERT INTO DetalleVenta(IdVenta, IdProducto, Cantidad, PrecioUnitario)
+    VALUES (@IdVenta, @IdProducto, @Cantidad, @Precio);
+
+    -- Actualizar stock
+    UPDATE Productos
+    SET Stock = Stock - @Cantidad
+    WHERE IdProducto = @IdProducto;
+
+    IF @@ROWCOUNT = 0
+    BEGIN
+        ROLLBACK;
+        PRINT 'Error al actualizar stock';
+        RETURN;
+    END
+
+    COMMIT;
+    PRINT 'Venta registrada correctamente';
+END
+GO
 
